@@ -1,5 +1,5 @@
 export interface Note {
-  id: string;
+  id: number;
   title: string;
   content: string;
   tag: string;
@@ -12,4 +12,4 @@ export type ValidationResult =
   | { valid: false; message: string };
 
 export type CreateNoteInput = Omit<Note, "id" | "createdAt" | "updatedAt">;
-export type UpdateNoteInput = Partial<CreateNoteInput> & { id: string };
+export type UpdateNoteInput = Partial<CreateNoteInput> & { id: number };

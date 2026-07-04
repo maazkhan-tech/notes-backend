@@ -1,0 +1,171 @@
+import type {
+  Note,
+  CreateNoteInput,
+  UpdateNoteInput,
+  ValidationResult,
+} from "../types/index.js";
+import fs from "fs";
+import config from "../config/index.js";
+import { error } from "console";
+
+// Validation functions for note inputs
+
+export function validateCreateInput(input: unknown): ValidationResult {
+  if (typeof input !== "object" || input === null) {
+    return { valid: false, message: "Request body must be a JSON object" };
+  }
+
+  const body = input as Record<string, unknown>;
+  // Validate title
+  if (typeof body.title !== "string" || body.title.trim().length === 0) {
+    return {
+      valid: false,
+      message: "title is required and must be a non-empty string",
+    };
+  }
+  // Validate content if provided
+  if (
+    body.content !== undefined &&
+    (typeof body.content !== "string" || body.content.trim().length === 0)
+  ) {
+    return { valid: false, message: "content must be a non-empty string" };
+  }
+  // Validate tag if provided
+  if (body.tag !== undefined && typeof body.tag !== "string") {
+    return { valid: false, message: "tag must be a string" };
+  }
+
+  return { valid: true };
+}
+
+export function validateUpdateInput(input: unknown): ValidationResult {
+  if (typeof input !== "object" || input === null) {
+    return { valid: false, message: "Request body must be a JSON object" };
+  }
+
+  const body = input as Record<string, unknown>;
+
+  const hasTitle = body.title !== undefined;
+  const hasContent = body.content !== undefined;
+  const hasTag = body.tag !== undefined;
+  // Validate title
+  if (!hasTitle && !hasContent && !hasTag) {
+    return { valid: false, message: "Provide at least one field to update" };
+  }
+
+  // Validate each field if provided
+
+  if (
+    hasTitle &&
+    (typeof body.title !== "string" || body.title.trim().length === 0)
+  ) {
+    return { valid: false, message: "title must be a non-empty string" };
+  }
+
+  if (
+    hasContent &&
+    (typeof body.content !== "string" || body.content.trim().length === 0)
+  ) {
+    return { valid: false, message: "content must be a non-empty string" };
+  }
+
+  if (hasTag && typeof body.tag !== "string") {
+    return { valid: false, message: "tag must be a string" };
+  }
+
+  return { valid: true };
+}
+
+// File operations for notes
+
+const notesFilePath = config.dbUrl || "notes.json";
+
+export function readNotesFromFile(): Note[] {
+  try {
+    if (!fs.existsSync(notesFilePath)) {
+      return [];
+    }
+    const data = fs.readFileSync(notesFilePath, "utf-8");
+    if (!data.trim()) {
+      return [];
+    }
+    return JSON.parse(data);
+  } catch (error) {
+    console.error("Error reading notes from file:", error);
+    return [];
+  }
+  throw error;
+}
+
+// function to write notes to file
+export function writeNotesToFile(notes: Note[]): void {
+  try {
+    fs.writeFileSync(notesFilePath, JSON.stringify(notes, null, 2), "utf-8");
+  } catch (error) {
+    console.error("Error writing notes to file:", error);
+  }
+}
+
+// function to get notes
+export function getNotes(): Note[] {
+  return readNotesFromFile();
+}
+
+// function to get note by id
+export function getNoteById(id: number): Note | undefined {
+  const notes = readNotesFromFile();
+  return notes.find((note) => note.id === id);
+}
+
+// function to create note
+export function createNote(input: CreateNoteInput): Note {
+  const notes = readNotesFromFile();
+  const id =
+    notes.length > 0 ? Math.max(...notes.map((note) => note.id)) + 1 : 1;
+  const newNote: Note = {
+    id: id,
+    title: input.title,
+    content: input.content || "",
+    tag: input.tag || "",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+  notes.push(newNote);
+  writeNotesToFile(notes);
+  return newNote;
+}
+
+// function to update note
+
+export function updateNote(input: UpdateNoteInput): Note | undefined {
+  const notes = readNotesFromFile();
+  const note = notes.find((note) => note.id === input.id);
+  if (!note) {
+    return undefined; // Note not found
+  }
+
+  if (input.title !== undefined) {
+    note.title = input.title;
+  }
+  if (input.content !== undefined) {
+    note.content = input.content;
+  }
+  if (input.tag !== undefined) {
+    note.tag = input.tag;
+  }
+
+  note.updatedAt = new Date();
+  writeNotesToFile(notes);
+  return note;
+}
+
+// function to delete note
+export function deleteNote(id: number): boolean {
+  const notes = readNotesFromFile();
+  const newNotes = notes.filter((note) => note.id !== id);
+  if (newNotes.length === notes.length) {
+    return false; // Note not found
+  }
+  writeNotesToFile(newNotes);
+  return true; // Note deleted
+}
