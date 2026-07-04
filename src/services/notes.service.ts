@@ -107,8 +107,12 @@ export function writeNotesToFile(notes: Note[]): void {
 }
 
 // function to get notes
-export function getNotes(): Note[] {
-  return readNotesFromFile();
+export function getNotes(tag?: string): Note[] {
+  const notes = readNotesFromFile();
+  if (!tag) {
+    return notes;
+  }
+  return notes.filter((note) => note.tag === tag);
 }
 
 // function to get note by id
