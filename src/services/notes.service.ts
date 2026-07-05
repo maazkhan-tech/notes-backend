@@ -11,28 +11,37 @@ import { error } from "console";
 // Validation functions for note inputs
 
 export function validateCreateInput(input: unknown): ValidationResult {
-  if (typeof input !== "object" || input === null) {
-    return { valid: false, message: "Request body must be a JSON object" };
+  if (typeof input !== "object" || input === null || Array.isArray(input)) {
+    return {
+      valid: false,
+      message: "Request body must be a JSON object",
+    };
   }
 
   const body = input as Record<string, unknown>;
-  // Validate title
+
   if (typeof body.title !== "string" || body.title.trim().length === 0) {
     return {
       valid: false,
       message: "title is required and must be a non-empty string",
     };
   }
-  // Validate content if provided
-  if (
-    body.content !== undefined &&
-    (typeof body.content !== "string" || body.content.trim().length === 0)
-  ) {
-    return { valid: false, message: "content must be a non-empty string" };
+
+  if (typeof body.content !== "string" || body.content.trim().length === 0) {
+    return {
+      valid: false,
+      message: "content must be a non-empty string",
+    };
   }
-  // Validate tag if provided
-  if (body.tag !== undefined && typeof body.tag !== "string") {
-    return { valid: false, message: "tag must be a string" };
+
+  if (
+    body.tag !== undefined &&
+    (typeof body.tag !== "string" || body.tag.trim().length === 0)
+  ) {
+    return {
+      valid: false,
+      message: "tag must be a non-empty string",
+    };
   }
 
   return { valid: true };
@@ -67,10 +76,6 @@ export function validateUpdateInput(input: unknown): ValidationResult {
     (typeof body.content !== "string" || body.content.trim().length === 0)
   ) {
     return { valid: false, message: "content must be a non-empty string" };
-  }
-
-  if (hasTag && typeof body.tag !== "string") {
-    return { valid: false, message: "tag must be a string" };
   }
 
   return { valid: true };
@@ -129,8 +134,8 @@ export function createNote(input: CreateNoteInput): Note {
   const newNote: Note = {
     id: id,
     title: input.title,
-    content: input.content || "",
-    tag: input.tag || "",
+    content: input.content,
+    tag: input.tag?.toLocaleLowerCase(),
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -155,7 +160,7 @@ export function updateNote(input: UpdateNoteInput): Note | undefined {
     note.content = input.content;
   }
   if (input.tag !== undefined) {
-    note.tag = input.tag;
+    note.tag = input.tag === null ? "" : input.tag.toLocaleLowerCase();
   }
 
   note.updatedAt = new Date();

@@ -46,11 +46,10 @@ export async function createNote(
   if (!validationResult.valid) {
     return next(new AppError(400, validationResult.message));
   }
-  const {title, content, tag} = req.body;
+  const { title, content, tag } = req.body;
   const newNote = notesService.createNote({ title, content, tag });
   res.status(201).json({ success: true, data: newNote });
 }
-
 
 // Patch /notes/:id - Update an existing note
 export async function updateNote(
@@ -87,5 +86,5 @@ export async function deleteNote(
   if (!deleted) {
     return next(new AppError(404, "Note not found"));
   }
-  res.status(200).json({ success: true, message: "Note deleted successfully" });
+  res.status(204).json({ success: true, message: "Note deleted successfully" });
 }
