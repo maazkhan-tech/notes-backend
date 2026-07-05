@@ -5,7 +5,7 @@ import type {
   ValidationResult,
 } from "../types/index.js";
 import fs from "fs";
-import config from "../config/index.js";
+import { config } from "../config/index.js";
 import { error } from "console";
 
 // Validation functions for note inputs
@@ -83,7 +83,7 @@ export function validateUpdateInput(input: unknown): ValidationResult {
 
 // File operations for notes
 
-const notesFilePath = config.dbUrl || "notes.json";
+const notesFilePath = config.tasksFile;
 
 export function readNotesFromFile(): Note[] {
   try {

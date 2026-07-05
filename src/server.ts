@@ -1,7 +1,7 @@
 import express from "express";
 import notesRoutes from "./routes/notes.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
-import config from "./config/index.js";
+import { config } from "./config/index.js";
 import morgan from "morgan";
 import cors from "cors";
 
