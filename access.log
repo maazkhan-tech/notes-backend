@@ -1,18 +1,18 @@
-GET /notes 200 2 - Response: []
+GET /notes 200 26 - Response: {"success":true,"data":[]}
 POST /notes 400 88 - Response: {"success":false,"error":{"message":"title is required and must be a non-empty string"}}
 POST /notes 400 88 - Response: {"success":false,"error":{"message":"title is required and must be a non-empty string"}}
-POST /notes 201 136 - Response: {"success":true,"data":{"id":1,"title":"x","content":"y","createdAt":"2026-07-05T07:27:59.549Z","updatedAt":"2026-07-05T07:27:59.549Z"}}
-POST /notes 201 149 - Response: {"success":true,"data":{"id":2,"title":"x","content":"y","tag":"work","createdAt":"2026-07-05T07:28:41.127Z","updatedAt":"2026-07-05T07:28:41.127Z"}}
-GET /notes 200 240 - Response: [{"id":1,"title":"x","content":"y","createdAt":"2026-07-05T07:27:59.549Z","updatedAt":"2026-07-05T07:27:59.549Z"},{"id":2,"title":"x","content":"y","tag":"work","createdAt":"2026-07-05T07:28:41.127Z","updatedAt":"2026-07-05T07:28:41.127Z"}]
-GET /notes?tag=work 200 127 - Response: [{"id":2,"title":"x","content":"y","tag":"work","createdAt":"2026-07-05T07:28:41.127Z","updatedAt":"2026-07-05T07:28:41.127Z"}]
-GET /notes?tag=personal 200 2 - Response: []
-GET /notes/1 200 136 - Response: {"success":true,"data":{"id":1,"title":"x","content":"y","createdAt":"2026-07-05T07:27:59.549Z","updatedAt":"2026-07-05T07:27:59.549Z"}}
+POST /notes 201 136 - Response: {"success":true,"data":{"id":1,"title":"X","content":"Y","createdAt":"2026-07-06T04:04:52.059Z","updatedAt":"2026-07-06T04:04:52.059Z"}}
+POST /notes 201 149 - Response: {"success":true,"data":{"id":2,"title":"X","content":"Y","tag":"work","createdAt":"2026-07-06T04:05:16.535Z","updatedAt":"2026-07-06T04:05:16.535Z"}}
+GET /notes 200 264 - Response: {"success":true,"data":[{"id":1,"title":"X","content":"Y","createdAt":"2026-07-06T04:04:52.059Z","updatedAt":"2026-07-06T04:04:52.059Z"},{"id":2,"title":"X","content":"Y","tag":"work","createdAt":"2026-07-06T04:05:16.535Z","updatedAt":"2026-07-06T04:05:16.535Z"}]}
+GET /notes?tag=work 200 151 - Response: {"success":true,"data":[{"id":2,"title":"X","content":"Y","tag":"work","createdAt":"2026-07-06T04:05:16.535Z","updatedAt":"2026-07-06T04:05:16.535Z"}]}
+GET /notes?tag=personal 200 26 - Response: {"success":true,"data":[]}
+GET /notes/1 200 136 - Response: {"success":true,"data":{"id":1,"title":"X","content":"Y","createdAt":"2026-07-06T04:04:52.059Z","updatedAt":"2026-07-06T04:04:52.059Z"}}
 GET /notes/99 404 54 - Response: {"success":false,"error":{"message":"Note not found"}}
 GET /notes/abc 400 59 - Response: {"success":false,"error":{"message":"ID must be a number"}}
 PATCH /notes/1 400 76 - Response: {"success":false,"error":{"message":"Provide at least one field to update"}}
-PATCH /notes/1 200 142 - Response: {"success":true,"data":{"id":1,"title":"Updated","content":"y","createdAt":"2026-07-05T07:27:59.549Z","updatedAt":"2026-07-05T07:32:48.361Z"}}
-PATCH /notes/1 200 151 - Response: {"success":true,"data":{"id":1,"title":"Updated","content":"y","createdAt":"2026-07-05T07:27:59.549Z","updatedAt":"2026-07-05T07:33:16.059Z","tag":""}}
+PATCH /notes/1 200 155 - Response: {"success":true,"data":{"id":1,"title":"updated","content":"Y","createdAt":"2026-07-06T04:04:52.059Z","updatedAt":"2026-07-06T04:08:05.848Z","tag":"work"}}
+PATCH /notes/1 200 142 - Response: {"success":true,"data":{"id":1,"title":"updated","content":"Y","createdAt":"2026-07-06T04:04:52.059Z","updatedAt":"2026-07-06T04:08:24.625Z"}}
 PATCH /notes/99 404 54 - Response: {"success":false,"error":{"message":"Note not found"}}
-DELETE /notes/1 204 - - Response: {"success":true,"message":"Note deleted successfully"}
+DELETE /notes/1 204 - - Response: -
 DELETE /notes/99 404 54 - Response: {"success":false,"error":{"message":"Note not found"}}
-GET /nonexistent 404 45 - Response: {"success":false,"message":"Route not found"}
+DELETE /nonexistent 404 55 - Response: {"success":false,"error":{"message":"Route not found"}}

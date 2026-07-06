@@ -112,11 +112,7 @@ export function readNotesFromFile(): Note[] {
 
 // function to write notes to file
 export function writeNotesToFile(notes: Note[]): void {
-  try {
-    fs.writeFileSync(notesFilePath, JSON.stringify(notes, null, 2), "utf-8");
-  } catch (error) {
-    console.error("Error writing notes to file:", error);
-  }
+  fs.writeFileSync(notesFilePath, JSON.stringify(notes, null, 2), "utf-8");
 }
 
 // function to get notes

@@ -8,26 +8,24 @@ import fs from "fs";
 import path from "path";
 const app = express();
 
+// Global middleware
+app.use(cors());
+
+// Parse request bodies first
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-declare global {
-  namespace Express {
-    interface Response {
-      locals: {
-        bodyCopy?: string;
-      };
-    }
-  }
-}
-
+// Capture response body for logging
 app.use((req, res, next) => {
   const originalSend = res.send;
+
   res.send = function (body) {
     if (body) {
       res.locals.bodyCopy =
         typeof body === "string" ? body : JSON.stringify(body);
     }
-    return originalSend.apply(res, arguments as any);
+
+    return originalSend.apply(this, arguments as any);
   };
 
   next();
@@ -43,10 +41,7 @@ const logStream = fs.createWriteStream(logFilePath, { flags: "a" });
 const logFormat =
   ":method :url :status :res[content-length] - Response: :res-body";
 
-// Global middleware
-app.use(cors());
 app.use(morgan(logFormat, { stream: logStream }));
-app.use(express.json());
 
 // Routes
 app.use("/notes", notesRoutes);

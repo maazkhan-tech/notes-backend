@@ -10,10 +10,12 @@ export async function getAllNotes(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const tag = req.query.tag as string | undefined;
-  if (tag && typeof tag !== "string") {
-    return next(new AppError(400, "Tag must be a string"));
+  const { tag } = req.query;
+
+  if (tag !== undefined && typeof tag !== "string") {
+    return next(new AppError(400, "tag must be a single string value"));
   }
+
   const filteredNotes = notesService.getNotes(tag);
   res.status(200).json({ success: true, data: filteredNotes });
 }
@@ -59,17 +61,25 @@ export async function updateNote(
   next: NextFunction,
 ): Promise<void> {
   const id = Number(req.params.id);
+
   if (isNaN(id)) {
     return next(new AppError(400, "ID must be a number"));
   }
 
   const validationResult = notesService.validateUpdateInput(req.body);
+
   if (!validationResult.valid) {
     return next(new AppError(400, validationResult.message));
   }
 
-  // ✅ Pass id separately from the updates
-  const updatedNote = notesService.updateNote(id, req.body);
+  // Only pass the allowed update fields to the service
+  const { title, content, tag } = req.body;
+
+  const updatedNote = notesService.updateNote(id, {
+    title,
+    content,
+    tag,
+  });
 
   if (!updatedNote) {
     return next(new AppError(404, "Note not found"));

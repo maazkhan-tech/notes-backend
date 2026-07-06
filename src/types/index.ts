@@ -12,4 +12,7 @@ export type ValidationResult =
   | { valid: false; message: string };
 
 export type CreateNoteInput = Omit<Note, "id" | "createdAt" | "updatedAt">;
-export type UpdateNoteInput = Partial<CreateNoteInput>;
+
+export type UpdateNoteInput = Partial<Omit<CreateNoteInput, "tag">> & {
+  tag?: string | null;
+};
