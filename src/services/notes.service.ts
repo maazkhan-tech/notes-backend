@@ -6,7 +6,6 @@ import type {
 } from "../types/index.js";
 import fs from "fs";
 import { config } from "../config/index.js";
-import { error } from "console";
 
 // Validation functions for note inputs
 
@@ -77,13 +76,23 @@ export function validateUpdateInput(input: unknown): ValidationResult {
   ) {
     return { valid: false, message: "content must be a non-empty string" };
   }
+  if (
+    hasTag &&
+    body.tag !== null &&
+    (typeof body.tag !== "string" || body.tag.trim().length === 0)
+  ) {
+    return {
+      valid: false,
+      message: "tag must be a non-empty string or null to clear it",
+    };
+  }
 
   return { valid: true };
 }
 
 // File operations for notes
 
-const notesFilePath = config.tasksFile;
+const notesFilePath = config.noteFile;
 
 export function readNotesFromFile(): Note[] {
   try {
@@ -99,7 +108,6 @@ export function readNotesFromFile(): Note[] {
     console.error("Error reading notes from file:", error);
     return [];
   }
-  throw error;
 }
 
 // function to write notes to file
@@ -132,10 +140,10 @@ export function createNote(input: CreateNoteInput): Note {
   const id =
     notes.length > 0 ? Math.max(...notes.map((note) => note.id)) + 1 : 1;
   const newNote: Note = {
-    id: id,
+    id,
     title: input.title,
     content: input.content,
-    tag: input.tag?.toLocaleLowerCase(),
+    tag: input.tag?.toLowerCase(),
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -146,21 +154,24 @@ export function createNote(input: CreateNoteInput): Note {
 
 // function to update note
 
-export function updateNote(input: UpdateNoteInput): Note | undefined {
+export function updateNote(
+  id: number,
+  updates: UpdateNoteInput,
+): Note | undefined {
   const notes = readNotesFromFile();
-  const note = notes.find((note) => note.id === input.id);
+  const note = notes.find((note) => note.id === id);
   if (!note) {
     return undefined; // Note not found
   }
 
-  if (input.title !== undefined) {
-    note.title = input.title;
+  if (updates.title !== undefined) {
+    note.title = updates.title;
   }
-  if (input.content !== undefined) {
-    note.content = input.content;
+  if (updates.content !== undefined) {
+    note.content = updates.content;
   }
-  if (input.tag !== undefined) {
-    note.tag = input.tag === null ? "" : input.tag.toLocaleLowerCase();
+  if (updates.tag !== undefined) {
+    note.tag = updates.tag === null ? undefined : updates.tag.toLowerCase();
   }
 
   note.updatedAt = new Date();

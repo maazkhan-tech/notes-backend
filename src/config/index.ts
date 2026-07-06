@@ -17,7 +17,7 @@ function optionalEnv(key: string, defaultValue: string): string {
 export const config = {
   nodeEnv: optionalEnv("NODE_ENV", "development"),
   port: Number(optionalEnv("PORT", "3000")),
-  tasksFile: optionalEnv("NOTES_FILE", "notes.json"),
+  noteFile: optionalEnv("NOTES_FILE", "notes.json"),
   // When you add these later, they'll be required:
   // jwtSecret: requireEnv('JWT_SECRET'),
   // databaseUrl: requireEnv('DATABASE_URL'),

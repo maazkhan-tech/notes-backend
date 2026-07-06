@@ -6,7 +6,6 @@ import morgan from "morgan";
 import cors from "cors";
 import fs from "fs";
 import path from "path";
-
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
@@ -56,7 +55,7 @@ app.use("/notes", notesRoutes);
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    message: "Route not found",
+    error: { message: "Route not found" },
   });
 });
 

@@ -15,11 +15,10 @@ export async function getAllNotes(
     return next(new AppError(400, "Tag must be a string"));
   }
   const filteredNotes = notesService.getNotes(tag);
-  res.status(200).json(filteredNotes);
+  res.status(200).json({ success: true, data: filteredNotes });
 }
 
 // GET /notes/:id - Retrieve a note by ID
-
 export async function getNoteById(
   req: Request,
   res: Response,
@@ -46,12 +45,14 @@ export async function createNote(
   if (!validationResult.valid) {
     return next(new AppError(400, validationResult.message));
   }
+
   const { title, content, tag } = req.body;
   const newNote = notesService.createNote({ title, content, tag });
+
   res.status(201).json({ success: true, data: newNote });
 }
 
-// Patch /notes/:id - Update an existing note
+// PATCH /notes/:id - Update an existing note
 export async function updateNote(
   req: Request,
   res: Response,
@@ -61,14 +62,19 @@ export async function updateNote(
   if (isNaN(id)) {
     return next(new AppError(400, "ID must be a number"));
   }
+
   const validationResult = notesService.validateUpdateInput(req.body);
   if (!validationResult.valid) {
     return next(new AppError(400, validationResult.message));
   }
-  const updatedNote = notesService.updateNote({ id, ...req.body });
+
+  // ✅ Pass id separately from the updates
+  const updatedNote = notesService.updateNote(id, req.body);
+
   if (!updatedNote) {
     return next(new AppError(404, "Note not found"));
   }
+
   res.status(200).json({ success: true, data: updatedNote });
 }
 
@@ -82,9 +88,11 @@ export async function deleteNote(
   if (isNaN(id)) {
     return next(new AppError(400, "ID must be a number"));
   }
+
   const deleted = notesService.deleteNote(id);
   if (!deleted) {
     return next(new AppError(404, "Note not found"));
   }
-  res.status(204).json({ success: true, message: "Note deleted successfully" });
+
+  res.status(204).send();
 }
