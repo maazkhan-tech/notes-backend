@@ -2,7 +2,7 @@ export interface Note {
   id: number;
   title: string;
   content: string;
-  tag?: string | undefined;
+  tag?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

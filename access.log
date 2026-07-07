@@ -1,0 +1,18 @@
+GET /notes 200 26 - Response: {"success":true,"data":[]}
+POST /notes 400 88 - Response: {"success":false,"error":{"message":"title is required and must be a non-empty string"}}
+POST /notes 400 88 - Response: {"success":false,"error":{"message":"title is required and must be a non-empty string"}}
+POST /notes 201 147 - Response: {"success":true,"data":{"id":4,"title":"x","content":"y","tag":null,"createdAt":"2026-07-07T11:09:44.173Z","updatedAt":"2026-07-07T11:09:44.173Z"}}
+POST /notes 201 149 - Response: {"success":true,"data":{"id":5,"title":"x","content":"y","tag":"work","createdAt":"2026-07-07T11:10:09.443Z","updatedAt":"2026-07-07T11:10:09.443Z"}}
+GET /notes 200 275 - Response: {"success":true,"data":[{"id":5,"title":"x","content":"y","tag":"work","createdAt":"2026-07-07T11:10:09.443Z","updatedAt":"2026-07-07T11:10:09.443Z"},{"id":4,"title":"x","content":"y","tag":null,"createdAt":"2026-07-07T11:09:44.173Z","updatedAt":"2026-07-07T11:09:44.173Z"}]}
+GET /notes?tag=work 200 151 - Response: {"success":true,"data":[{"id":5,"title":"x","content":"y","tag":"work","createdAt":"2026-07-07T11:10:09.443Z","updatedAt":"2026-07-07T11:10:09.443Z"}]}
+GET /notes?tag=personal 200 26 - Response: {"success":true,"data":[]}
+GET /notes/4 200 147 - Response: {"success":true,"data":{"id":4,"title":"x","content":"y","tag":null,"createdAt":"2026-07-07T11:09:44.173Z","updatedAt":"2026-07-07T11:09:44.173Z"}}
+GET /notes/99 404 54 - Response: {"success":false,"error":{"message":"Note not found"}}
+GET /notes/abc 400 59 - Response: {"success":false,"error":{"message":"ID must be a number"}}
+PATCH /notes/4 400 76 - Response: {"success":false,"error":{"message":"Provide at least one field to update"}}
+PATCH /notes/4 200 153 - Response: {"success":true,"data":{"id":4,"title":"updated","content":"y","tag":null,"createdAt":"2026-07-07T11:09:44.173Z","updatedAt":"2026-07-07T11:12:24.242Z"}}
+PATCH /notes/4 200 153 - Response: {"success":true,"data":{"id":4,"title":"updated","content":"y","tag":null,"createdAt":"2026-07-07T11:09:44.173Z","updatedAt":"2026-07-07T11:12:45.668Z"}}
+PATCH /notes/99 404 54 - Response: {"success":false,"error":{"message":"Note not found"}}
+DELETE /notes/4 204 - - Response: -
+DELETE /notes/99 404 54 - Response: {"success":false,"error":{"message":"Note not found"}}
+DELETE /nonexistent 404 55 - Response: {"success":false,"error":{"message":"Route not found"}}

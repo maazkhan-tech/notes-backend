@@ -17,6 +17,16 @@ app.use(express.urlencoded({ extended: true }));
 morgan.token("res-body", (req, res: any) => {
   return res.locals?.bodyCopy || "-";
 });
+app.use((req, res, next) => {
+  const originalJson = res.json;
+
+  res.json = function (body) {
+    res.locals.bodyCopy = JSON.stringify(body);
+    return originalJson.call(this, body);
+  };
+
+  next();
+});
 const logFilePath = path.join("access.log");
 const logStream = fs.createWriteStream(logFilePath, { flags: "a" });
 
