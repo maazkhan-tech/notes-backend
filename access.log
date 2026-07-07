@@ -1,32 +1,49 @@
-GET /notes 200 26 - Response: {"success":true,"data":[]}
-POST /notes 400 88 - Response: {"success":false,"error":{"message":"title is required and must be a non-empty string"}}
-POST /notes 400 88 - Response: {"success":false,"error":{"message":"title is required and must be a non-empty string"}}
-POST /notes 201 136 - Response: {"success":true,"data":{"id":1,"title":"X","content":"Y","createdAt":"2026-07-06T04:04:52.059Z","updatedAt":"2026-07-06T04:04:52.059Z"}}
-POST /notes 201 149 - Response: {"success":true,"data":{"id":2,"title":"X","content":"Y","tag":"work","createdAt":"2026-07-06T04:05:16.535Z","updatedAt":"2026-07-06T04:05:16.535Z"}}
-GET /notes 200 264 - Response: {"success":true,"data":[{"id":1,"title":"X","content":"Y","createdAt":"2026-07-06T04:04:52.059Z","updatedAt":"2026-07-06T04:04:52.059Z"},{"id":2,"title":"X","content":"Y","tag":"work","createdAt":"2026-07-06T04:05:16.535Z","updatedAt":"2026-07-06T04:05:16.535Z"}]}
-GET /notes?tag=work 200 151 - Response: {"success":true,"data":[{"id":2,"title":"X","content":"Y","tag":"work","createdAt":"2026-07-06T04:05:16.535Z","updatedAt":"2026-07-06T04:05:16.535Z"}]}
 GET /notes?tag=personal 200 26 - Response: {"success":true,"data":[]}
-GET /notes/1 200 136 - Response: {"success":true,"data":{"id":1,"title":"X","content":"Y","createdAt":"2026-07-06T04:04:52.059Z","updatedAt":"2026-07-06T04:04:52.059Z"}}
-GET /notes/99 404 54 - Response: {"success":false,"error":{"message":"Note not found"}}
-GET /notes/abc 400 59 - Response: {"success":false,"error":{"message":"ID must be a number"}}
-PATCH /notes/1 400 76 - Response: {"success":false,"error":{"message":"Provide at least one field to update"}}
-PATCH /notes/1 200 155 - Response: {"success":true,"data":{"id":1,"title":"updated","content":"Y","createdAt":"2026-07-06T04:04:52.059Z","updatedAt":"2026-07-06T04:08:05.848Z","tag":"work"}}
-PATCH /notes/1 200 142 - Response: {"success":true,"data":{"id":1,"title":"updated","content":"Y","createdAt":"2026-07-06T04:04:52.059Z","updatedAt":"2026-07-06T04:08:24.625Z"}}
-PATCH /notes/99 404 54 - Response: {"success":false,"error":{"message":"Note not found"}}
+GET /notes?tag=work 200 335 - Response: {"success":true,"data":[{"id":2,"title":"Maaz Khan","content":"Y","tag":"work","createdAt":"2026-07-07T02:39:00.234Z","updatedAt":"2026-07-07T02:39:00.234Z"},{"id":1,"title":"Learn PostgreSQL properly","content":"It is a relational database","tag":"work","createdAt":"2026-07-07T01:59:43.475Z","updatedAt":"2026-07-07T02:00:08.163Z"}]}
 DELETE /notes/1 204 - - Response: -
-DELETE /notes/99 404 54 - Response: {"success":false,"error":{"message":"Note not found"}}
-DELETE /nonexistent 404 55 - Response: {"success":false,"error":{"message":"Route not found"}}
-GET /tasks?done=true 404 - - Response: {"success":false,"error":{"message":"Route not found"}}
-GET /tasks?done=true 404 - - Response: {"success":false,"error":{"message":"Route not found"}}
-GET /tasks 404 - - Response: {"success":false,"error":{"message":"Route not found"}}
-GET /notes?tag=z 200 - - Response: {"success":true,"data":{}}
-GET /notes 200 - - Response: {"success":true,"data":{}}
-GET /favicon.ico 404 - - Response: {"success":false,"error":{"message":"Route not found"}}
-GET /notes/1 404 - - Response: {"success":false,"error":{"message":"Note not found"}}
-GET /notes/1 404 - - Response: {"success":false,"error":{"message":"Note not found"}}
-GET /notes 200 - - Response: {"success":true,"data":{}}
-GET /notes/1 404 - - Response: {"success":false,"error":{"message":"Note not found"}}
-GET /notes/1 404 - - Response: {"success":false,"error":{"message":"Note not found"}}
-GET /notes 200 - - Response: {"success":true,"data":{}}
-GET /notes?tag=z 200 - - Response: {"success":true,"data":{}}
-GET /notes?tag=work 200 - - Response: {"success":true,"data":{}}
+GET /notes/1 200 26 - Response: {"success":true,"data":{}}
+GET /notes/2 200 26 - Response: {"success":true,"data":{}}
+GET /notes/3 200 26 - Response: {"success":true,"data":{}}
+GET /notes 200 159 - Response: {"success":true,"data":[{"id":2,"title":"Maaz Khan","content":"Y","tag":"work","createdAt":"2026-07-07T02:39:00.234Z","updatedAt":"2026-07-07T02:39:00.234Z"}]}
+GET /notes/2 200 26 - Response: {"success":true,"data":{}}
+GET /notes 200 159 - Response: {"success":true,"data":[{"id":2,"title":"Maaz Khan","content":"Y","tag":"work","createdAt":"2026-07-07T02:39:00.234Z","updatedAt":"2026-07-07T02:39:00.234Z"}]}
+GET /notes 200 159 - Response: {"success":true,"data":[{"id":2,"title":"Maaz Khan","content":"Y","tag":"work","createdAt":"2026-07-07T02:39:00.234Z","updatedAt":"2026-07-07T02:39:00.234Z"}]}
+GET /notes 200 26 - Response: {"success":true,"data":[]}
+POST /notes 201 26 - Response: {"success":true,"data":{}}
+GET /notes 200 159 - Response: {"success":true,"data":[{"id":3,"title":"Maaz Khan","content":"Y","tag":"work","createdAt":"2026-07-07T06:43:06.376Z","updatedAt":"2026-07-07T06:43:06.376Z"}]}
+GET /notes/3 200 26 - Response: {"success":true,"data":{}}
+GET /notes/1 200 26 - Response: {"success":true,"data":{}}
+GET /notes 200 159 - Response: {"success":true,"data":[{"id":3,"title":"Maaz Khan","content":"Y","tag":"work","createdAt":"2026-07-07T06:43:06.376Z","updatedAt":"2026-07-07T06:43:06.376Z"}]}
+GET /notes 200 159 - Response: {"success":true,"data":[{"id":3,"title":"Maaz Khan","content":"Y","tag":"work","createdAt":"2026-07-07T06:43:06.376Z","updatedAt":"2026-07-07T06:43:06.376Z"}]}
+POST /notes 201 26 - Response: {"success":true,"data":{}}
+POST /notes/2 404 55 - Response: {"success":false,"error":{"message":"Route not found"}}
+POST /notes/2 404 55 - Response: {"success":false,"error":{"message":"Route not found"}}
+GET /notes/1 200 26 - Response: {"success":true,"data":{}}
+GET /notes/3 200 26 - Response: {"success":true,"data":{}}
+GET /notes/4 200 26 - Response: {"success":true,"data":{}}
+GET /notes/4 200 26 - Response: {"success":true,"data":{}}
+GET /notes 200 26 - Response: {"success":true,"data":[]}
+GET /notes/1 200 26 - Response: {"success":true,"data":{}}
+GET /notes 200 26 - Response: {"success":true,"data":[]}
+POST /notes 201 26 - Response: {"success":true,"data":{}}
+GET /notes 200 159 - Response: {"success":true,"data":[{"id":1,"title":"Maaz Khan","content":"Y","tag":"work","createdAt":"2026-07-07T07:35:35.624Z","updatedAt":"2026-07-07T07:35:35.624Z"}]}
+GET /notes/1 200 26 - Response: {"success":true,"data":{}}
+GET /notes/1 200 26 - Response: -
+GET /notes 200 159 - Response: -
+GET /notes/1 200 26 - Response: -
+GET /notes:1 404 55 - Response: -
+GET /notes/1/1 404 55 - Response: -
+GET /notes/1 200 26 - Response: -
+GET /notes/1 200 26 - Response: -
+GET /notes 200 159 - Response: -
+GET /notes 200 159 - Response: -
+GET /notes/1 200 26 - Response: -
+DELETE /notes/1 204 - - Response: -
+GET /notes/1 200 26 - Response: -
+GET /notes 200 26 - Response: -
+POST /notes 201 26 - Response: -
+GET /notes 200 159 - Response: -
+GET /notes/2 200 26 - Response: -
+GET /notes/1 200 26 - Response: -
+GET /notes/099 200 26 - Response: -
+GET /notes 200 159 - Response: -

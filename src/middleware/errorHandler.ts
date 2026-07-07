@@ -1,6 +1,7 @@
 // src/middleware/errorHandler.ts
 import type { Request, Response, NextFunction } from "express";
 import { AppError } from "../errors/AppError.js";
+import pg from "pg";
 
 export function errorHandler(
   err: unknown,
@@ -16,7 +17,16 @@ export function errorHandler(
     return;
   }
 
-  // Unexpected error — log it, don't leak internals to client
+  // PostgreSQL errors have a 'code' property
+  if (err instanceof pg.DatabaseError) {
+    console.error("Database error:", err.message, "Code:", err.code);
+    res.status(500).json({
+      success: false,
+      error: { message: "Database error" },
+    });
+    return;
+  }
+
   console.error("Unhandled error:", err);
   res.status(500).json({
     success: false,

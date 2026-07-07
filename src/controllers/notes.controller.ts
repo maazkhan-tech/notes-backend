@@ -11,15 +11,12 @@ export async function getAllNotes(
   next: NextFunction,
 ): Promise<void> {
   const { tag } = req.query;
-
   if (tag !== undefined && typeof tag !== "string") {
     return next(new AppError(400, "tag must be a single string value"));
   }
-
-  const filteredNotes = notesService.getNotes(tag);
-  res.status(200).json({ success: true, data: filteredNotes });
+  const notes = await notesService.getNotes(tag); // ← await
+  res.status(200).json({ success: true, data: notes });
 }
-
 // GET /notes/:id - Retrieve a note by ID
 export async function getNoteById(
   req: Request,

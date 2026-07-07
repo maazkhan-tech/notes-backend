@@ -15,23 +15,21 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// CORRECTED: Converted response override to capture arguments properly without crashing Arrow scope
-app.use((req, res, next) => {
-  const originalSend = res.send;
+// Fixed the middleware interceptor to stream data seamlessly without blanking out responses
+// app.use((req, res, next) => {
+//   const originalSend = res.send;
 
-  res.send = function (...args: any[]) {
-    const body = args[0];
-    if (body) {
-      (res.locals as any).bodyCopy =
-        typeof body === "string" ? body : JSON.stringify(body);
-    }
-    return originalSend.apply(this);
-  };
+//   res.send = function (body) {
+//     if (body !== undefined && body !== null) {
+//       // Safely capture and convert the body string/object for Morgan logs
+//       (res.locals as any).bodyCopy =
+//         typeof body === "string" ? body : JSON.stringify(body);
+//     }
+//     return originalSend.call(this, body);
+//   };
 
-  next();
-});
-
-// CORRECTED: Type safety mapping for custom express parameters in Morgan
+//   next();
+// });
 morgan.token("res-body", (req, res: any) => {
   return res.locals?.bodyCopy || "-";
 });

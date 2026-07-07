@@ -4,8 +4,6 @@ import type {
   UpdateNoteInput,
   ValidationResult,
 } from "../types/index.js";
-import fs from "fs";
-import { config } from "../config/index.js";
 import { query } from "../db/index.js";
 
 // Validation functions for note inputs
@@ -91,105 +89,107 @@ export function validateUpdateInput(input: unknown): ValidationResult {
   return { valid: true };
 }
 
-// File operations for notes
-
-const notesFilePath = config.noteFile;
-
-export function readNotesFromFile(): Note[] {
-  try {
-    if (!fs.existsSync(notesFilePath)) {
-      return [];
-    }
-    const data = fs.readFileSync(notesFilePath, "utf-8");
-    if (!data.trim()) {
-      return [];
-    }
-    return JSON.parse(data);
-  } catch (error) {
-    console.error("Error reading notes from file:", error);
-    return [];
-  }
-}
-
-// function to write notes to file
-export function writeNotesToFile(notes: Note[]): void {
-  fs.writeFileSync(notesFilePath, JSON.stringify(notes, null, 2), "utf-8");
-}
-
 // function to get notes
 
 export async function getNotes(tag?: string): Promise<Note[]> {
   if (tag) {
-    const result = await query<Note>("SELECT * FROM notes WHERE tag = $1", [
-      tag,
-    ]);
+    const result = await query<Note>(
+      `SELECT id, title, content, tag,
+              created_at AS "createdAt",
+              updated_at AS "updatedAt"
+       FROM notes
+       WHERE tag = $1
+       ORDER BY created_at DESC`,
+      [tag],
+    );
     return result.rows;
   }
 
   const result = await query<Note>(
-    "SELECT * FROM notes ORDER BY created_at DESC",
+    `SELECT id, title, content, tag,
+            created_at AS "createdAt",
+            updated_at AS "updatedAt"
+     FROM notes
+     ORDER BY created_at DESC`,
   );
   return result.rows;
 }
 
 // function to get note by id
-export function getNoteById(id: number): Note | undefined {
-  const notes = readNotesFromFile();
-  return notes.find((note) => note.id === id);
+export async function getNoteById(id: number): Promise<Note | undefined> {
+  const result = await query<Note>(
+    `SELECT id, title, content, tag,
+            created_at AS "createdAt",
+            updated_at AS "updatedAt"
+     FROM notes
+     WHERE id = $1`,
+    [id],
+  );
+  return result.rows[0]; // undefined if not found
 }
 
 // function to create note
-export function createNote(input: CreateNoteInput): Note {
-  const notes = readNotesFromFile();
-  const id =
-    notes.length > 0 ? Math.max(...notes.map((note) => note.id)) + 1 : 1;
-  const newNote: Note = {
-    id,
-    title: input.title,
-    content: input.content,
-    tag: input.tag?.toLowerCase(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-  notes.push(newNote);
-  writeNotesToFile(notes);
-  return newNote;
+export async function createNote(input: CreateNoteInput): Promise<Note> {
+  const result = await query<Note>(
+    `INSERT INTO notes (title, content, tag)
+     VALUES ($1, $2, $3)
+     RETURNING id, title, content, tag,
+               created_at AS "createdAt",
+               updated_at AS "updatedAt"`,
+    [input.title, input.content, input.tag ?? null],
+  );
+  const note = result.rows[0];
+  if (!note) {
+    throw new Error("Failed to create note");
+  }
+  return note;
 }
 
 // function to update note
 
-export function updateNote(
+export async function updateNote(
   id: number,
   updates: UpdateNoteInput,
-): Note | undefined {
-  const notes = readNotesFromFile();
-  const note = notes.find((note) => note.id === id);
-  if (!note) {
-    return undefined; // Note not found
-  }
+): Promise<Note | undefined> {
+  const fields: string[] = [];
+  const values: unknown[] = [];
+  let paramIndex = 1;
 
   if (updates.title !== undefined) {
-    note.title = updates.title;
+    fields.push(`title = $${paramIndex++}`);
+    values.push(updates.title);
   }
+
   if (updates.content !== undefined) {
-    note.content = updates.content;
+    fields.push(`content = $${paramIndex++}`);
+    values.push(updates.content);
   }
+
   if (updates.tag !== undefined) {
-    note.tag = updates.tag === null ? undefined : updates.tag.toLowerCase();
+    fields.push(`tag = $${paramIndex++}`);
+    values.push(updates.tag === null ? null : updates.tag.toLowerCase());
   }
 
-  note.updatedAt = new Date();
-  writeNotesToFile(notes);
-  return note;
+  // Always update updated_at
+  fields.push(`updated_at = NOW()`);
+
+  // id goes last as the WHERE parameter
+  values.push(id);
+
+  const result = await query<Note>(
+    `UPDATE notes
+     SET ${fields.join(", ")}
+     WHERE id = $${paramIndex}
+     RETURNING id, title, content, tag,
+               created_at AS "createdAt",
+               updated_at AS "updatedAt"`,
+    values,
+  );
+
+  return result.rows[0]; // undefined if id not found
 }
-
 // function to delete note
-export function deleteNote(id: number): boolean {
-  const notes = readNotesFromFile();
-  const newNotes = notes.filter((note) => note.id !== id);
-  if (newNotes.length === notes.length) {
-    return false; // Note not found
-  }
-  writeNotesToFile(newNotes);
-  return true; // Note deleted
+export async function deleteNote(id: number): Promise<boolean> {
+  const result = await query("DELETE FROM notes WHERE id = $1", [id]);
+  return result.rowCount === 1;
 }
