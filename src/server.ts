@@ -14,26 +14,9 @@ app.use(cors());
 // Parse request bodies first
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Fixed the middleware interceptor to stream data seamlessly without blanking out responses
-// app.use((req, res, next) => {
-//   const originalSend = res.send;
-
-//   res.send = function (body) {
-//     if (body !== undefined && body !== null) {
-//       // Safely capture and convert the body string/object for Morgan logs
-//       (res.locals as any).bodyCopy =
-//         typeof body === "string" ? body : JSON.stringify(body);
-//     }
-//     return originalSend.call(this, body);
-//   };
-
-//   next();
-// });
 morgan.token("res-body", (req, res: any) => {
   return res.locals?.bodyCopy || "-";
 });
-
 const logFilePath = path.join("access.log");
 const logStream = fs.createWriteStream(logFilePath, { flags: "a" });
 

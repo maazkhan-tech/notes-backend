@@ -47,3 +47,16 @@ GET /notes/2 200 26 - Response: -
 GET /notes/1 200 26 - Response: -
 GET /notes/099 200 26 - Response: -
 GET /notes 200 159 - Response: -
+GET /notes/1 404 54 - Response: -
+GET /notes/2 200 157 - Response: -
+POST /notes/2 404 55 - Response: -
+POST /notes 201 157 - Response: -
+GET /notes 200 293 - Response: -
+GET /notes/2 200 157 - Response: -
+GET /notes?tag=personal 200 26 - Response: -
+GET /notes?tag=person 200 26 - Response: -
+GET /notes?tag= 200 293 - Response: -
+GET /notes?tag=work 200 293 - Response: -
+GET /notes 200 293 - Response: -
+PATCH /notes 404 55 - Response: -
+PATCH /notes/2 200 168 - Response: -

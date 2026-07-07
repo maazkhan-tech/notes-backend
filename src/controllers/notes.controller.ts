@@ -27,7 +27,7 @@ export async function getNoteById(
   if (isNaN(id)) {
     return next(new AppError(400, "ID must be a number"));
   }
-  const note = notesService.getNoteById(id);
+  const note = await notesService.getNoteById(id);
   if (!note) {
     return next(new AppError(404, "Note not found"));
   }
@@ -46,7 +46,7 @@ export async function createNote(
   }
 
   const { title, content, tag } = req.body;
-  const newNote = notesService.createNote({ title, content, tag });
+  const newNote = await notesService.createNote({ title, content, tag });
 
   res.status(201).json({ success: true, data: newNote });
 }
@@ -72,7 +72,7 @@ export async function updateNote(
   // Only pass the allowed update fields to the service
   const { title, content, tag } = req.body;
 
-  const updatedNote = notesService.updateNote(id, {
+  const updatedNote = await notesService.updateNote(id, {
     title,
     content,
     tag,
@@ -96,7 +96,7 @@ export async function deleteNote(
     return next(new AppError(400, "ID must be a number"));
   }
 
-  const deleted = notesService.deleteNote(id);
+  const deleted = await notesService.deleteNote(id);
   if (!deleted) {
     return next(new AppError(404, "Note not found"));
   }
