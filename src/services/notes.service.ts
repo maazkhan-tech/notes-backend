@@ -6,6 +6,7 @@ import type {
 } from "../types/index.js";
 import fs from "fs";
 import { config } from "../config/index.js";
+import { query } from "../db/index.js";
 
 // Validation functions for note inputs
 
@@ -116,12 +117,19 @@ export function writeNotesToFile(notes: Note[]): void {
 }
 
 // function to get notes
-export function getNotes(tag?: string): Note[] {
-  const notes = readNotesFromFile();
-  if (!tag) {
-    return notes;
+
+export async function getNotes(tag?: string): Promise<Note[]> {
+  if (tag) {
+    const result = await query<Note>("SELECT * FROM notes WHERE tag = $1", [
+      tag,
+    ]);
+    return result.rows;
   }
-  return notes.filter((note) => note.tag === tag);
+
+  const result = await query<Note>(
+    "SELECT * FROM notes ORDER BY created_at DESC",
+  );
+  return result.rows;
 }
 
 // function to get note by id

@@ -15,24 +15,25 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Capture response body for logging
+// CORRECTED: Converted response override to capture arguments properly without crashing Arrow scope
 app.use((req, res, next) => {
   const originalSend = res.send;
 
-  res.send = function (body) {
+  res.send = function (...args: any[]) {
+    const body = args[0];
     if (body) {
-      res.locals.bodyCopy =
+      (res.locals as any).bodyCopy =
         typeof body === "string" ? body : JSON.stringify(body);
     }
-
-    return originalSend.apply(this, arguments as any);
+    return originalSend.apply(this);
   };
 
   next();
 });
 
-morgan.token("res-body", (req, res: express.Response) => {
-  return res.locals.bodyCopy || "-";
+// CORRECTED: Type safety mapping for custom express parameters in Morgan
+morgan.token("res-body", (req, res: any) => {
+  return res.locals?.bodyCopy || "-";
 });
 
 const logFilePath = path.join("access.log");

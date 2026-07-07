@@ -16,3 +16,17 @@ PATCH /notes/99 404 54 - Response: {"success":false,"error":{"message":"Note not
 DELETE /notes/1 204 - - Response: -
 DELETE /notes/99 404 54 - Response: {"success":false,"error":{"message":"Note not found"}}
 DELETE /nonexistent 404 55 - Response: {"success":false,"error":{"message":"Route not found"}}
+GET /tasks?done=true 404 - - Response: {"success":false,"error":{"message":"Route not found"}}
+GET /tasks?done=true 404 - - Response: {"success":false,"error":{"message":"Route not found"}}
+GET /tasks 404 - - Response: {"success":false,"error":{"message":"Route not found"}}
+GET /notes?tag=z 200 - - Response: {"success":true,"data":{}}
+GET /notes 200 - - Response: {"success":true,"data":{}}
+GET /favicon.ico 404 - - Response: {"success":false,"error":{"message":"Route not found"}}
+GET /notes/1 404 - - Response: {"success":false,"error":{"message":"Note not found"}}
+GET /notes/1 404 - - Response: {"success":false,"error":{"message":"Note not found"}}
+GET /notes 200 - - Response: {"success":true,"data":{}}
+GET /notes/1 404 - - Response: {"success":false,"error":{"message":"Note not found"}}
+GET /notes/1 404 - - Response: {"success":false,"error":{"message":"Note not found"}}
+GET /notes 200 - - Response: {"success":true,"data":{}}
+GET /notes?tag=z 200 - - Response: {"success":true,"data":{}}
+GET /notes?tag=work 200 - - Response: {"success":true,"data":{}}
