@@ -15,6 +15,5 @@ function optionalEnv(key: string, defaultValue: string): string {
 export const config = {
   nodeEnv: optionalEnv("NODE_ENV", "development"),
   port: Number(optionalEnv("PORT", "3000")),
-  noteFile: optionalEnv("NOTES_FILE", "notes.json"),
   databaseUrl: requireEnv("DATABASE_URL"),
 } as const;
