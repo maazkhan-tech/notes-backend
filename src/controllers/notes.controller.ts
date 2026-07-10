@@ -16,16 +16,11 @@ export async function getAllNotes(
     return next(new AppError(400, "tag must be a single string value"));
   }
 
-  const page =
-    typeof req.query.page === "string"
-      ? Math.max(1, parseInt(req.query.page, 10))
-      : 1;
+  const rawPage = parseInt(req.query.page as string, 10);
+  const page = isNaN(rawPage) || rawPage < 1 ? 1 : rawPage;
 
-  const limit =
-    typeof req.query.limit === "string"
-      ? Math.max(1, parseInt(req.query.limit, 10))
-      : 10;
-
+  const rawLimit = parseInt(req.query.limit as string, 10);
+  const limit = Math.min(100, isNaN(rawLimit) || rawLimit < 1 ? 10 : rawLimit);
   const [notes, total] = await Promise.all([
     notesService.getNotes(tag, page, limit),
     notesService.getNoteCount(tag),
