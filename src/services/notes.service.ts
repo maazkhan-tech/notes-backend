@@ -6,6 +6,21 @@ import type {
 } from "../types/index.js";
 import { query } from "../db/index.js";
 
+
+// function to get note count
+export async function getNoteCount(): Promise<number> {
+  const result = await query<{ count: string }>(
+    `SELECT COUNT(*) AS count
+     FROM notes`,
+  );
+
+  const row = result.rows[0];
+  if (!row) {
+    return 0;
+  }
+  return parseInt(row.count, 10);
+}
+
 // Validation functions for note inputs
 
 export function validateCreateInput(input: unknown): ValidationResult {
@@ -91,7 +106,13 @@ export function validateUpdateInput(input: unknown): ValidationResult {
 
 // function to get notes
 
-export async function getNotes(tag?: string): Promise<Note[]> {
+export async function getNotes(
+  tag?: string,
+  page: number = 1,
+  limit: number = 10,
+): Promise<Note[]> {
+  const offset = (page - 1) * limit;
+
   if (tag) {
     const result = await query<Note>(
       `SELECT id, title, content, tag,
@@ -99,9 +120,11 @@ export async function getNotes(tag?: string): Promise<Note[]> {
               updated_at AS "updatedAt"
        FROM notes
        WHERE tag = $1
-       ORDER BY created_at DESC`,
-      [tag],
+       ORDER BY created_at DESC
+       LIMIT $2 OFFSET $3`,
+      [tag, limit, offset],
     );
+
     return result.rows;
   }
 
@@ -110,8 +133,11 @@ export async function getNotes(tag?: string): Promise<Note[]> {
             created_at AS "createdAt",
             updated_at AS "updatedAt"
      FROM notes
-     ORDER BY created_at DESC`,
+     ORDER BY created_at DESC
+     LIMIT $1 OFFSET $2`,
+    [limit, offset],
   );
+
   return result.rows;
 }
 

@@ -1,3 +1,5 @@
+
+
 CREATE TABLE IF NOT EXISTS notes (
   id         SERIAL PRIMARY KEY,
   title      TEXT NOT NULL,
@@ -9,3 +11,12 @@ CREATE TABLE IF NOT EXISTS notes (
 
 CREATE INDEX IF NOT EXISTS idx_notes_tag ON notes(tag);
 CREATE INDEX IF NOT EXISTS idx_notes_created_at ON notes(created_at DESC);
+
+CREATE OR REPLACE FUNCTION set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
