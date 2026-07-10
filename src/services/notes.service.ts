@@ -6,13 +6,19 @@ import type {
 } from "../types/index.js";
 import { query } from "../db/index.js";
 
-
 // function to get note count
-export async function getNoteCount(): Promise<number> {
-  const result = await query<{ count: string }>(
-    `SELECT COUNT(*) AS count
-     FROM notes`,
-  );
+export async function getNoteCount(tag?: string): Promise<number> {
+  const result = tag
+    ? await query<{ count: string }>(
+        `SELECT COUNT(*) AS count
+         FROM notes
+         WHERE tag = $1`,
+        [tag],
+      )
+    : await query<{ count: string }>(
+        `SELECT COUNT(*) AS count
+         FROM notes`,
+      );
 
   const row = result.rows[0];
   if (!row) {

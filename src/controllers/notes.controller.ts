@@ -11,11 +11,36 @@ export async function getAllNotes(
   next: NextFunction,
 ): Promise<void> {
   const { tag } = req.query;
+
   if (tag !== undefined && typeof tag !== "string") {
     return next(new AppError(400, "tag must be a single string value"));
   }
-  const notes = await notesService.getNotes(tag); // ← await
-  res.status(200).json({ success: true, data: notes });
+
+  const page =
+    typeof req.query.page === "string"
+      ? Math.max(1, parseInt(req.query.page, 10))
+      : 1;
+
+  const limit =
+    typeof req.query.limit === "string"
+      ? Math.max(1, parseInt(req.query.limit, 10))
+      : 10;
+
+  const [notes, total] = await Promise.all([
+    notesService.getNotes(tag, page, limit),
+    notesService.getNoteCount(tag),
+  ]);
+
+  res.status(200).json({
+    success: true,
+    data: notes,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  });
 }
 // GET /notes/:id - Retrieve a note by ID
 export async function getNoteById(

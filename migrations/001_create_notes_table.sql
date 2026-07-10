@@ -20,3 +20,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
+CREATE TRIGGER notes_updated_at
+BEFORE UPDATE ON notes
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
